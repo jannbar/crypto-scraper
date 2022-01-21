@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import fs from 'fs'
 import puppeteer from 'puppeteer'
 import prompt from 'prompt'
