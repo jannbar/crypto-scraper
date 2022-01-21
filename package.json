@@ -1,0 +1,17 @@
+{
+  "name": "crypto-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "clear": "rm items.txt"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prompt": "^1.2.1",
+    "puppeteer": "^13.1.1"
+  }
+}
