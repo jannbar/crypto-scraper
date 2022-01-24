@@ -5,16 +5,14 @@ import prompt from 'prompt'
 function extractItems() {
   const extractedElements = document.querySelectorAll('.infinite-scroll-component a.no-style')
 
-  console.log(Array.from(extractedElements).length)
-
   if (Array.from(extractedElements).length === 0) {
     throw new Error('Could not find any items.')
   }
 
   const items = []
 
-  for (let element of extractedElements) {
-    items.push(element.href)
+  for (let el of extractedElements) {
+    items.push(el.href)
   }
 
   return items
@@ -29,15 +27,14 @@ async function scrapeItems(page, extractItems, itemCount, scrollDelay = 800) {
     let previousHeight
     while (items.length < itemCount) {
       items = await page.evaluate(extractItems)
+      console.log(`👉 Scraped ${items.length} of ${itemCount} items`)
+      if (items.length === itemCount) break
       previousHeight = await page.evaluate('document.body.scrollHeight')
       await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
       await page.waitForFunction(`document.body.scrollHeight > ${previousHeight}`)
       await page.waitForTimeout(scrollDelay)
     }
-  } catch (error) {
-    console.log(error.message)
-    process.exit()
-  }
+  } catch (error) {}
 
   return items
 }
@@ -56,7 +53,11 @@ async function useCollectionInfo(page) {
 }
 
 async function main() {
+  // Let user type in the collection link
   const { link } = await prompt.get(['link'])
+
+  // Start to measure execution time
+  const start = new Date()
 
   // Boot up a new Chromium instance
   const browser = await puppeteer.launch({
@@ -83,9 +84,13 @@ async function main() {
     `Collection: ${collectionTitle}\nLink: ${link}\nItems: ${count}\n\n`
   )
   fs.appendFileSync('./items.txt', items.join('\n') + '\n')
-  console.log(`✅ Done. Saved collection links to items.txt`)
 
   await browser.close()
+
+  console.log(`✅ Done. Saved item links to items.txt`)
+
+  const end = (new Date() - start) / 1000
+  console.log(`✨ Took ${parseFloat(end).toFixed(2)}s`)
 }
 
 main()
